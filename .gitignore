@@ -1,0 +1,6 @@
+runs
+venv
+logs_cpu_layers
+results_cpu_layers
+__pycache__
+smartbox-NLP-opus-mt-it-fr.pth

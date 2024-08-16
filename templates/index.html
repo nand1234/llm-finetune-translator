@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Interaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 1080px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            color: #555;
+            margin-top: 10px;
+            display: block;
+            text-align: left;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            color: #333;
+            margin-top: 20px;
+        }
+        p#responseText {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            min-height: 50px;
+            white-space: pre-wrap;
+        }
+        /* Loader styles */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            display: none;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interact with Fine-tuned Model</h1>
+        
+        <label for="source">Target Language:</label>
+        <input type="text" id="source" name="source">
+        
+        <label for="inputText">Text to Translate:</label>
+        <textarea id="inputText" name="inputText" rows="4" cols="50"></textarea>
+        
+        <button onclick="sendRequest()">Submit</button>
+
+        <!-- Loader -->
+        <div class="loader" id="loader"></div>
+        
+        <h2>Response:</h2>
+        <p id="responseText"></p>
+    </div>
+    
+    <script>
+        async function sendRequest() {
+            const source = document.getElementById("source").value;
+            const inputText = document.getElementById("inputText").value;
+            const loader = document.getElementById("loader");
+            const responseText = document.getElementById("responseText");
+            
+            // Clear previous response and show loader
+            responseText.innerText = "";
+            loader.style.display = "block";
+            
+            const data = {
+                source: source,
+                input_text: inputText
+            };
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/interact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                responseText.innerText = result.response;
+            } catch (error) {
+                console.error('Error:', error);
+                responseText.innerText = "An error occurred while processing your request.";
+            } finally {
+                // Hide the loader after the response is received
+                loader.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
